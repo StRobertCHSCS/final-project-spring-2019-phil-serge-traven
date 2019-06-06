@@ -2,15 +2,16 @@
 Racing Game
 """
 import arcade
+import os
 
 # Constants
-SCREEN_WIDTH = 1080
+SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Racing Game"
 
 # Constants used to scale our sprites from their original size
 CHARACTER_SCALING = 0.15
-TILE_SCALING = 0.5
+TILE_SCALING = 1.6
 COIN_SCALING = 0.5
 
 # Movement speed of player, in pixels per frame
@@ -27,6 +28,9 @@ class MyGame(arcade.Window):
 
         # Call the parent class and set up the window
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+
+        file_path = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(file_path)
 
         self.total_time = 0.0
 
@@ -46,9 +50,9 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
-        self.background = arcade.load_texture("images/backgroundRoad.png")
-
         self.total_time = 0.0
+
+        self.background = arcade.load_texture("images/backgroundRoad.png")
 
         # Create the Sprite lists
         self.player_list = arcade.SpriteList()
@@ -60,6 +64,7 @@ class MyGame(arcade.Window):
         self.player_sprite.center_x = 500
         self.player_sprite.center_y = 110
         self.player_sprite.angle = 90
+        self.player_sprite.change_y = 1
         self.player_list.append(self.player_sprite)
 
         # Create the 'physics engine'
@@ -76,9 +81,10 @@ class MyGame(arcade.Window):
         # Clear the screen to the background color
         arcade.start_render()
 
-        # Draw our sprites
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                       SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
+
+        # Draw our sprites
 
         # Calculate minutes
         minutes = int(self.total_time) // 60
@@ -90,8 +96,10 @@ class MyGame(arcade.Window):
         output = f"Time: {minutes:02d}:{seconds:02d}"
 
         # Output the timer text.
-        arcade.draw_text(output, 20, 680, arcade.color.BLACK, 30)
-        arcade.draw_text(output, 22, 678, arcade.color.WHITE_SMOKE, 30)
+        arcade.draw_text(output, 10 + self.view_left, 10 + self.view_bottom,
+                         arcade.color.BLACK, 24)
+        arcade.draw_text(output, 12 + self.view_left, 12 + self.view_bottom,
+                         arcade.color.WHITE_SMOKE, 24)
 
         self.wall_list.draw()
         self.coin_list.draw()
@@ -115,6 +123,7 @@ class MyGame(arcade.Window):
 
     def update(self, delta_time):
         """ Movement and game logic """
+        self.player_sprite.update()
 
         self.total_time += delta_time
 
