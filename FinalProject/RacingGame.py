@@ -4,6 +4,8 @@ Racing Game
 import arcade
 import os
 
+# Traven - Player design, controls + movement, Timer, Score, Screen (viewpoint)
+
 # Constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
