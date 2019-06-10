@@ -106,8 +106,6 @@ class MyGame(arcade.Window):
         # Output the timer and score text.
         arcade.draw_text(output, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.color.BLACK, 24)
-        arcade.draw_text(output, 12 + self.view_left, 12 + self.view_bottom,
-                         arcade.color.WHITE_SMOKE, 24)
 
         arcade.draw_text(scoreOutput, 540 + self.view_left, 640 + self.view_bottom,
                          arcade.color.WHITE, 35)
