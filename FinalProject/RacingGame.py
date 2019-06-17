@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Racing Game"
 
 # Constants used to scale our sprites from their original size
-CHARACTER_SCALING = 0.15
+CHARACTER_SCALING = 0.4
 TILE_SCALING = 1.6
 COIN_SCALING = 0.5
 
