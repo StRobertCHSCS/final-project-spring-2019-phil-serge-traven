@@ -10,7 +10,7 @@ import random
 # Constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-SCREEN_TITLE = "Serge's Racing Game"
+SCREEN_TITLE = "Racing Game"
 MOVEMENT_SPEED = 3
 SCALE = 0.5
 
