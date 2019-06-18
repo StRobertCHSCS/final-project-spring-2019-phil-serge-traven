@@ -4,6 +4,8 @@ Racing Game
 import arcade
 import os
 
+# Traven - Player design, controls + movement, Timer, Score, Screen (viewpoint)
+
 # Constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -36,11 +38,13 @@ class MyGame(arcade.Window):
 
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
+        self.game_over = False
         self.background = None
 
         self.coin_list = None
         self.wall_list = None
         self.player_list = None
+        self.barrier = None
 
         # Separate variable that holds the player sprite
         self.player_sprite = None
@@ -53,6 +57,7 @@ class MyGame(arcade.Window):
         self.total_time = 0.0
 
         self.background = arcade.load_texture("images/backgroundRoad.png")
+
 
         # Create the Sprite lists
         self.player_list = arcade.SpriteList()
@@ -92,14 +97,20 @@ class MyGame(arcade.Window):
         # Calculate seconds by using a modulus (remainder)
         seconds = int(self.total_time) % 60
 
+        # Calculate score per second
+        score = int(self.total_time * 100)
+
         # Figure out our output
         output = f"Time: {minutes:02d}:{seconds:02d}"
 
-        # Output the timer text.
+        scoreOutput = f"Score: {score}"
+
+        # Output the timer and score text.
         arcade.draw_text(output, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.color.BLACK, 24)
-        arcade.draw_text(output, 12 + self.view_left, 12 + self.view_bottom,
-                         arcade.color.WHITE_SMOKE, 24)
+
+        arcade.draw_text(scoreOutput, 540 + self.view_left, 640 + self.view_bottom,
+                         arcade.color.WHITE, 35)
 
         self.wall_list.draw()
         self.coin_list.draw()
@@ -123,31 +134,32 @@ class MyGame(arcade.Window):
 
     def update(self, delta_time):
         """ Movement and game logic """
-        self.player_sprite.update()
+        if not self.game_over:
+            self.player_sprite.update()
 
-        self.total_time += delta_time
+            self.total_time += delta_time
 
-        # Call update on all sprites (The sprites don't do much in this
-        # example though.)
-        self.physics_engine.update()
+            # Call update on all sprites (The sprites don't do much in this
+            # example though.)
+            self.physics_engine.update()
 
-        # --- Manage Scrolling ---
+            # --- Manage Scrolling ---
 
-        # Track if we need to change the viewport
+            # Track if we need to change the viewport
 
-        changed = False
+            changed = False
 
-        # Scroll up
-        top_bndry = self.view_bottom + SCREEN_HEIGHT - VIEWPORT_MARGIN
-        if self.player_sprite.top > top_bndry:
-            self.view_bottom += self.player_sprite.top - top_bndry
-            changed = True
+            # Scroll up
+            top_bndry = self.view_bottom + SCREEN_HEIGHT - VIEWPORT_MARGIN
+            if self.player_sprite.top > top_bndry:
+                self.view_bottom += self.player_sprite.top - top_bndry
+                changed = True
 
-        if changed:
-            arcade.set_viewport(self.view_left,
-                                SCREEN_WIDTH + self.view_left,
-                                self.view_bottom,
-                                SCREEN_HEIGHT + self.view_bottom)
+            if changed:
+                arcade.set_viewport(self.view_left,
+                                    SCREEN_WIDTH + self.view_left,
+                                    self.view_bottom,
+                                    SCREEN_HEIGHT + self.view_bottom)
 
 
 def main():
