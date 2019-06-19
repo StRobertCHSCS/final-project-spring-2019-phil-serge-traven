@@ -67,7 +67,7 @@ class VehicleSprite(arcade.Sprite):
         # If we are in the middle of respawning, this is non-zero.
         self.respawning = 1
         self.center_x = SCREEN_WIDTH / 2
-        self.center_y = 70
+        self.center_y = 400
 
     def update(self):
 
@@ -187,10 +187,15 @@ class MyGame(arcade.Window):
         arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                       SCREEN_WIDTH,
                                       SCREEN_HEIGHT + 1000, arcade.color.BLACK)
-
-        arcade.draw_text("CLICK TO START GAME!", 250, 325, arcade.color.WHITE, 70)
-        arcade.draw_text("REV UP YOUR ENGINE FELLA....", 630, 140, arcade.color.RED, 35)
-
+        arcade.draw_rectangle_filled(670, 570, 1035, 100, arcade.color.RED)
+        arcade.draw_rectangle_filled(450, 350, 470, 250, arcade.color.WHITE)
+        arcade.draw_rectangle_filled(450, 350, 447, 230, arcade.color.BLACK)
+        arcade.draw_text("STREET RACER XTREME", 168, 525, arcade.color.BLACK, 85)
+        arcade.draw_text("CLICK TO START GAME!", 760, 330, arcade.color.WHITE, 35)
+        arcade.draw_text("Coins are 10 points each", 320, 400, arcade.color.WHITE, 20)
+        arcade.draw_text("Press space to use nitrous", 320, 340, arcade.color.WHITE, 20)
+        arcade.draw_text("Move with the arrow keys", 320, 280, arcade.color.WHITE, 20)
+        arcade.draw_text("!! DONT CRASH INTO ANYBODY !!", 350, 100, arcade.color.RED, 40)
     # STEP 3: Add this function
     def draw_game_over(self):
         """
