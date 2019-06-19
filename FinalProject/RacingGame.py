@@ -13,17 +13,21 @@ SCREEN_TITLE = "Racing Game"
 MOVEMENT_SPEED = 5
 SCALE = 0.25
 
+INSTRUCTIONS_PAGE = 0
+GAME_RUNNING = 1
+GAME_OVER = 2
+
 OFFSCREEN_SPACE = 50
 LEFT_LIMIT = -OFFSCREEN_SPACE
 RIGHT_LIMIT = SCREEN_WIDTH + OFFSCREEN_SPACE
 BOTTOM_LIMIT = -OFFSCREEN_SPACE
 TOP_LIMIT = SCREEN_HEIGHT + OFFSCREEN_SPACE
 
-STARTING_OBJECTS_COUNT = 5
+STARTING_OBJECTS_COUNT = 7
 OBJECTS_SPEED = 3
 
 SPRITE_SCALING_COIN = 0.2
-COIN_COUNT = 3
+COIN_COUNT = 6
 
 # Constants used to scale our sprites from their original size
 CHARACTER_SCALING = 0.25
@@ -148,6 +152,8 @@ class MyGame(arcade.Window):
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
 
+        self.current_state = INSTRUCTIONS_PAGE
+
         self.total_time = 0.0
         self.gameover = None
         self.lives = None
@@ -174,15 +180,33 @@ class MyGame(arcade.Window):
         # Our physics engine
         self.physics_engine = None
 
-    def game_over(self):
+    def draw_instructions_page(self):
+        """
+        Draw an instruction page. Load the page as an image.
+        """
+        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                      SCREEN_WIDTH,
+                                      SCREEN_HEIGHT + 1000, arcade.color.BLACK)
 
-        # doing something
-        if self.gameover:
-            self.background = arcade.load_texture("images\\thereal.png")
-            return
+        arcade.draw_text("CLICK TO START GAME!", 250, 325, arcade.color.WHITE, 70)
+        arcade.draw_text("REV UP YOUR ENGINE FELLA....", 630, 140, arcade.color.RED, 35)
 
-        # And now restart game from the begin
-        self.setup()
+    # STEP 3: Add this function
+    def draw_game_over(self):
+        """
+        Draw "Game over" across the screen.
+        """
+        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                      SCREEN_WIDTH // 2,
+                                      SCREEN_HEIGHT // 1.5, arcade.color.BRONZE)
+        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, 410, 600, 140, arcade.color.COOL_GREY)
+        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, 275, 550, 100, arcade.color.COOL_GREY)
+
+        output = "Oops, You Lost :("
+        arcade.draw_text(output, 360, 381, arcade.color.BLACK, 66)
+
+        output = "Click Anywhere To Restart"
+        arcade.draw_text(output, 375, 258, arcade.color.BLACK, 40)
 
     # Make the enemies
     def create_buddies(self):
@@ -293,6 +317,20 @@ class MyGame(arcade.Window):
         # Clear the screen to the background color
         arcade.start_render()
 
+        if self.current_state == INSTRUCTIONS_PAGE:
+            self.draw_instructions_page()
+
+        elif self.current_state == GAME_RUNNING:
+            self.draw_game()
+
+        else:
+            self.draw_game()
+            self.draw_game_over()
+
+    def draw_game(self):
+
+        arcade.start_render()
+
         for x in range(0, 1):
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2,
                                           (SCREEN_HEIGHT // 2) - x - self.line_start,
@@ -333,94 +371,113 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
-        if key == arcade.key.LEFT:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT:
-            self.player_sprite.change_x = MOVEMENT_SPEED
-        elif key == arcade.key.UP:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.DOWN:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        elif key == arcade.key.SPACE:
-            self.player_sprite.speed = self.player_sprite.speed + 1
-        elif key == arcade.key.ESCAPE:
-            self.gameover = 0
-            if self.gameover:
+        if self.current_state == GAME_RUNNING:
+            if key == arcade.key.LEFT:
+                self.player_sprite.change_x = -MOVEMENT_SPEED
+            elif key == arcade.key.RIGHT:
+                self.player_sprite.change_x = MOVEMENT_SPEED
+            elif key == arcade.key.UP:
+                self.player_sprite.change_y = MOVEMENT_SPEED
+            elif key == arcade.key.DOWN:
+                self.player_sprite.change_y = -MOVEMENT_SPEED
+            elif key == arcade.key.SPACE:
+                self.player_sprite.speed = self.player_sprite.speed + 1
+            elif key == arcade.key.ESCAPE:
                 self.gameover = 0
-                self.setup()
+                if self.gameover:
+                    self.gameover = 0
+                    self.instruction_screen()
 
     def on_key_release(self, key, modifiers):
         """ Called whenever a user releases a key. """
-        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player_sprite.change_x = 0
-        elif key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.SPACE:
-            self.player_sprite.speed = 0
-        elif key == arcade.key.ESCAPE:
-            if self.gameover:
-                self.gameover = 0
-                self.setup()
+        if self.current_state == GAME_RUNNING:
+            if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+                self.player_sprite.change_x = 0
+            elif key == arcade.key.UP or key == arcade.key.DOWN:
+                self.player_sprite.change_y = 0
+            elif key == arcade.key.SPACE:
+                self.player_sprite.speed = 0
+            elif key == arcade.key.ESCAPE:
+                if self.gameover:
+                    self.gameover = 0
+                    self.instruction_screen()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        """
+        Called when the user presses a mouse button.
+        """
+
+        # Change states as needed.
+        if self.current_state == INSTRUCTIONS_PAGE:
+            # Next page of instructions.
+            self.current_state = GAME_RUNNING
+            # Start the game
+            self.setup()
+            self.current_state = GAME_RUNNING
+        elif self.current_state == GAME_OVER:
+            # Restart the game.
+            self.setup()
+            self.current_state = GAME_RUNNING
+
 
     def update(self, delta_time):
 
         """ Movement and game logic """
+        if self.current_state == GAME_RUNNING:
+            if self.gameover:
+                return
 
-        if self.gameover:
-            return
+            self.all_sprites_list.update()
 
-        self.all_sprites_list.update()
+            # Game Clock
+            self.total_time += delta_time
 
-        # Game Clock
-        self.total_time += delta_time
+            # flick if it was collision
+            if self.collision_time:
+                if self.collision_time % 2:
+                    self.player_sprite.color = arcade.color.AMAZON
+                else:
+                    self.player_sprite.color = arcade.color.WHITE
 
-        # flick if it was collision
-        if self.collision_time:
-            if self.collision_time % 2:
-                self.player_sprite.color = arcade.color.AMAZON
-            else:
-                self.player_sprite.color = arcade.color.WHITE
+            # Call update on all sprites (The sprites don't do much in this
+            # example though.)
+            # self.physics_engine.update()
 
-        # Call update on all sprites (The sprites don't do much in this
-        # example though.)
-        # self.physics_engine.update()
-
-        # Generate a list of all enemies that collided with the player.
-        ene_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+            # Generate a list of all enemies that collided with the player.
+            ene_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                             self.myobject_list)
 
-        # Loop through each colliding sprite, remove it, and add to the score.
-        for myobject in ene_hit_list:
-            myobject.remove_from_sprite_lists()
-            self.numobj -= 1
-            self.lives -= 1
-            self.collision_time = 50
-            self.player_sprite.color = arcade.color.AMAZON
-        if (self.numobj < 1):
-            self.numobj = STARTING_OBJECTS_COUNT
-            self.create_buddies()
+            # Loop through each colliding sprite, remove it, and add to the score.
+            for myobject in ene_hit_list:
+                myobject.remove_from_sprite_lists()
+                self.numobj -= 1
+                self.lives -= 1
+                self.collision_time = 50
+                self.player_sprite.color = arcade.color.AMAZON
+            if (self.numobj < 1):
+                self.numobj = STARTING_OBJECTS_COUNT
+                self.create_buddies()
 
-        if self.lives < 1:
-            self.gameover = 1
-            self.game_over()
+            if self.lives < 1:
+                self.current_state = GAME_OVER
 
-        # Generate a list of coins that collided with the player.
-        coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+            # Generate a list of coins that collided with the player.
+            coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                              self.coin_list)
-        for coin in coin_hit_list:
-            coin.remove_from_sprite_lists()
-            self.score += 10
-            self.ncoins -= 1
-        if self.ncoins < 1:
-            self.ncoins = COIN_COUNT
-            self.create_treasure()
+            for coin in coin_hit_list:
+                coin.remove_from_sprite_lists()
+                self.score += 10
+                self.ncoins -= 1
+            if self.ncoins < 1:
+                self.ncoins = COIN_COUNT
+                self.create_treasure()
 
-        # --- Manage Scrolling ---
+            # --- Manage Scrolling ---
 
-        if self.line_start == SCREEN_HEIGHT // 2:
-            self.line_start = 0
-        else:
-            self.line_start = self.line_start + 1
+            if self.line_start == SCREEN_HEIGHT // 2:
+                self.line_start = 0
+            else:
+                self.line_start = self.line_start + 1
 
 
 def main():
