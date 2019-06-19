@@ -232,7 +232,7 @@ class MyGame(arcade.Window):
         
         # doing something
         if self.gameover:
-            self.background = arcade.load_texture("images\\thereal.png")
+            self.background = arcade.load_texture("images/thereal.png")
             return
         
         # And now restart game from the begin
@@ -244,8 +244,8 @@ class MyGame(arcade.Window):
         
         self.total_time = 0.0
 
-        self.background = arcade.load_texture("images\\background-1_0 (1).png")
-        
+        self.background = arcade.load_texture("images/backgroundRoad.npg")
+        #self.background = arcade.load_texture("images/background.jpg")
         # Create the Sprite lists
         self.all_sprites_list = arcade.SpriteList()
         self.player_list = arcade.SpriteList()
@@ -260,7 +260,7 @@ class MyGame(arcade.Window):
         self.collision_time = 0
         self.numobj = STARTING_OBJECTS_COUNT
         self.ncoins = COIN_COUNT
-        self.player_sprite = VehicleSprite("images\\carcar.png", 
+        self.player_sprite = VehicleSprite("images/carcar.png",
                                             CHARACTER_SCALING)
         self.player_sprite.angle = 90
         #self.player_sprite.change_y = 1        
@@ -307,7 +307,7 @@ class MyGame(arcade.Window):
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, 
                                     (SCREEN_HEIGHT // 2) - x - self.line_start,
                                     SCREEN_WIDTH, 
-                                    SCREEN_HEIGHT, self.background)
+                                    SCREEN_HEIGHT, self.background-1_0)
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, 
                                     (SCREEN_HEIGHT) - x - self.line_start,
                                     SCREEN_WIDTH, 
@@ -375,11 +375,6 @@ class MyGame(arcade.Window):
                 self.gameover = 0            
                 self.setup()
 
-    def on_mouse_motion(self, x, y, dx, dy):
-        """ Called to update our objects. 
-             Happens approximately 60 times per second."""
-        self.player_sprite.center_x = x
-        self.player_sprite.center_y = y
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -394,7 +389,7 @@ class MyGame(arcade.Window):
         Called when a user releases a mouse button.
         """
         if button == arcade.MOUSE_BUTTON_LEFT:
-            self.player_sprite.color = arcade.color.AUBURN    
+            self.player_sprite.color = arcade.color.AUBURN
 
     def update(self, delta_time):
         
@@ -456,16 +451,14 @@ class MyGame(arcade.Window):
             self.line_start = 0
         else:
             self.line_start = self.line_start + 1        
-      
-      
+
+
 
 def main():
     """ Main method """
     window = MyGame()
     window.setup()
     arcade.run()
-    
-    
 
 
 if __name__ == "__main__":
